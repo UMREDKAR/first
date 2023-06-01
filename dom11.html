@@ -1,0 +1,45 @@
+<html>
+<body>
+    <form onsubmit="save(event)">
+        <label>Name</label>
+        <input type="text" name="username" required/>
+        <label>EmailID</label>
+        <input type="email" name="emailid" required/>
+        <label>PhoneNumber</label>
+        <input type="tel" name="phonenumber" required/>
+        <button>Submit</button>
+    </form>
+    <ul id='listofitems'></ul>
+    <script>
+        function save(event)
+        {
+            event.preventDefault();
+            const name =event.target.username.value;
+            const email=event.target.emailid.value;
+            const phonenumber=event.target.phonenumber.value;
+            
+           const obj={
+                name,
+                email,
+                phonenumber
+            }
+
+            localStorage.setItem(obj.email,JSON.stringify(obj));
+
+            lists(obj);
+        }
+  
+        function lists(obj)
+        {
+            const pelement=document.getElementById('listofitems');
+            /*const celement=document.createElement('li');
+
+            celement.textContent=obj.name + ' - ' + obj.email;
+            pelement.appendChild(celement);*/
+
+            pelement.innerHTML=pelement.innerHTML+`<li>${obj.name} - ${obj.email} - ${obj.phonenumber}</li>`;
+
+        }
+    </script>
+</body>
+</html>
