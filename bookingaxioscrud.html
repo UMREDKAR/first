@@ -1,0 +1,79 @@
+<html>
+<body>
+    <form onsubmit="save(event)">
+        <label>Name</label>
+        <input type="text" name="username" id="uid" required/>
+        <label>EmailID</label>
+        <input type="email" name="emailid" id="eid" required/>
+        <label>PhoneNumber</label>
+        <input type="tel" name="phonenumber" id="pid" required/>
+        <button>Submit</button>
+    </form>
+    <ul id='listofitems'></ul>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    
+    <script>
+        function save(event)
+        {
+            event.preventDefault();
+            const name =event.target.username.value;
+            const email=event.target.emailid.value;
+            const phonenumber=event.target.phonenumber.value;
+
+           const obj={
+                name,
+                email,
+                phonenumber
+            }
+
+            //localStorage.setItem(obj.email,JSON.stringify(obj));
+
+            axios.post("https://crudcrud.com/api/c891b83f4b9b49379e93d1957fd8bf28/apointmentData",obj)
+            .then((response)=>{
+                lists(response.data);
+                console.log(response)
+            })
+            .catch((err)=>{
+                document.body.innerHTML=document.body.innerHTML+"<h4>Something went wrong</h4>"
+                console.log(err)
+            })
+            //lists(obj);
+        }
+
+        function lists(obj)
+        {
+            const pelement=document.getElementById('listofitems');
+            const celement=document.createElement('li');
+
+            celement.textContent=obj.name + ' - ' + obj.email + ' - ' + obj.phonenumber;
+
+            const delbtn =document.createElement('input');
+            delbtn.type="button";
+            delbtn.value='Delete';
+            delbtn.onclick =()=>{
+                localStorage.removeItem(obj.email);
+                pelement.removeChild(celement);
+            }
+
+            const editbtn=document.createElement('input');
+            editbtn.type="button";
+            editbtn.value='Edit';
+            editbtn.onclick =()=>{
+                localStorage.removeItem(obj.email);
+                pelement.removeChild(celement);
+
+                document.getElementById('uid').value=obj.name;
+                document.getElementById('eid').value=obj.email;
+                document.getElementById('pid').value=obj.phonenumber;
+            }
+
+            celement.appendChild(delbtn);
+            celement.appendChild(editbtn);
+            pelement.appendChild(celement);
+
+        }
+
+    </script>
+</body>
+</html>
