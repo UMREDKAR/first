@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project</title>
+</head>
+<body>
+    <form onsubmit="savetoLocal(event)">
+    <label for="sellingprice">Selling Price :</label>
+    <input type="number" id="sid" required></input>
+    <label for="productName">Product Name :</label>
+    <input type="text" id="pid" required></input>
+    <button>Add Product</button>
+    <br>
+    <h1>Products</h1>
+    </form>
+    
+    <ul id="listofitems"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+        function savetoLocal(event)
+        {
+            event.preventDefault();
+  
+            const sp = event.target.sid.value;
+            const pn = event.target.pid.value;
+
+            const obj={
+                sp,
+                pn
+            }
+            
+            
+
+            axios.post("https://crudcrud.com/api/fa2122e46e8949618430506b14bf604a/product",obj)
+                 .then((response)=>{
+                    showuserDetails(response.data)
+                 })
+                 .catch((error)=>console.log(error))
+        }
+        
+        window.addEventListener("DOMContentLoaded",()=>{
+            axios.get("https://crudcrud.com/api/fa2122e46e8949618430506b14bf604a/product")
+                 .then((response)=>{
+                      for(var i=0;i<response.data.length;i++)
+                      {
+                        showuserDetails(response.data[i])  
+                        //console.log(document.getElementById('sid').value[i])
+                      }
+
+                 })
+                 .catch((error)=>console.log(error))
+        })
+        
+        
+
+        function showuserDetails(user)
+        {
+              parent=document.getElementById('listofitems');
+              child=`<li id="${user._id}">${user.sp} - ${user.pn}
+                <button onclick = deleteUser('${user._id}')>Delete product</button>
+                </li>`
+
+                parent.innerHTML=parent.innerHTML + child
+                
+         }
+
+        function deleteUser(userId)
+        {
+            axios.delete(`https://crudcrud.com/api/fa2122e46e8949618430506b14bf604a/product/${userId}`)
+                 .then((response)=>{
+                     removeUserFromScreen(userId)
+                 })
+                 .catch((error)=>console.log(error))
+        }
+
+        function removeUserFromScreen(userId)
+        {
+            parent=document.getElementById('listofitems');
+            child=document.getElementById(userId);
+            if(child)
+            {
+                parent.removeChild(child);
+            }
+        }
+
+
+ 
+    </script>
+</body>
+</html>
