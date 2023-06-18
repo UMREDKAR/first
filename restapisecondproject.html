@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project</title>
+</head>
+<body>
+    <form onsubmit="savetolocal(event)">
+        <label for="sellingPrice">Selling Price : </label>
+        <input type="number" id="sellingPrice" required>
+        <label for="productName">Product Name : </label>
+        <input type="text" id="productName" required>
+        <label for="categoryChoose">Choose a Category  : </label>
+        <select id="categoryChoose">
+            <option id="ei">Electronic items</option>
+            <option id="fi">Food items</option>
+            <option id="si">Skincare items</option>
+        </select>
+        <button>Add Product</button>
+    </form>
+        <h1>Products</h1>
+        <h3>Electronic items</h3>
+        <p id="eis"></p>
+        <h3>Food items</h3>
+        <p id="fis"></p>
+        <h3>Skincare items</h3>
+        <p id="sis"></p>
+    
+
+    <ul id="listofitems"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+    <script>
+      var category
+      var obj
+      
+      
+      function savetolocal(event)
+      {
+        event.preventDefault()
+         const sp = event.target.sellingPrice.value
+         const pn = event.target.productName.value
+         category = event.target.categoryChoose.value
+
+           obj={
+            sp,
+            pn,
+            category
+         }
+
+         axios.post("https://crudcrud.com/api/20266101cbab40b8bf8f4819fb1fe6ab/products",obj)
+              .then((response)=>{
+                 showuserDetails(response.data)
+                 
+              })
+              .catch((error)=>{
+                  console.log(error)
+              })
+      }
+
+      window.addEventListener("DOMContentLoaded",()=>{
+        axios.get("https://crudcrud.com/api/20266101cbab40b8bf8f4819fb1fe6ab/products")
+             .then((response)=>{
+                    for(var i=0;i<response.data.length;i++)
+                    {
+                      showuserDetails(response.data[i]);
+                    }
+             })
+             .catch((error)=>{
+                  console.log(error)
+             })
+      })
+ 
+      function showuserDetails(user)
+      {
+         parentelectronic=document.getElementById('eis')
+         parentfood=document.getElementById('fis')
+         parentskin=document.getElementById('sis')
+
+         if(user.category==='Electronic items')
+          { 
+            child=`<li id="${user._id}">${user.sp} - ${user.category} - ${user.pn}
+               <button onclick = deleteUser('${user._id}','elec')>Delete Order</button>
+              </li>`
+            parentelectronic.innerHTML =  parentelectronic.innerHTML + child
+          }
+
+          if(user.category==='Food items')
+          {
+            child=`<li id="${user._id}">${user.sp} - ${user.category} - ${user.pn}
+               <button onclick = deleteUser('${user._id}','food')>Delete Order</button>
+              </li>`
+             parentfood.innerHTML=  parentfood.innerHTML + child
+          }
+
+          if(user.category==='Skincare items')
+          {
+            child=`<li id="${user._id}">${user.sp} - ${user.category} - ${user.pn}
+               <button onclick = deleteUser('${user._id}','skin')>Delete Order</button>
+              </li>`
+             parentskin.innerHTML =  parentskin.innerHTML + child
+          }
+      }
+
+      function deleteUser(userId,cname)
+      {
+          axios.delete(`https://crudcrud.com/api/20266101cbab40b8bf8f4819fb1fe6ab/products/${userId}`)
+               .then((response)=>{
+                 removeUserFromScreen(userId,cname)
+               })
+               .catch((error)=>{
+                 console.log(error)
+               })
+      }
+  
+      function removeUserFromScreen(userId,cname)
+      {
+          parentelectronic = document.getElementById('eis')
+          parentfood = document.getElementById('fis')
+          parentskin = document.getElementById('sis')
+
+          child = document.getElementById(userId)
+
+          if(cname==='elec')
+          {
+            parentelectronic.removeChild(child)
+          }
+
+          if(cname==='food')
+          {
+            parentfood.removeChild(child)
+          }
+
+          if(cname==='skin')
+          {
+            parentskin.removeChild(child)
+          }
+      }
+
+    </script>
+
+</body>
+</html>
