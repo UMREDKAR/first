@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project</title>
+</head>
+<body>
+    <form onsubmit="savetoLocal(event)">
+    <label for="sellingprice">Selling Price :</label>
+    <input type="number" id="sid" required></input>
+    <label for="productName">Product Name :</label>
+    <input type="text" id="pid" required></input>
+    <button>Add Product</button>
+    <br>
+    <h1>Products</h1>
+    </form>
+    
+    <ul id="listofitems"></ul>
+    <h3 style="display: inline;" id="high">Total Value Worth of Products is Rs : </h3>
+    <span id="demo"></span>
+    <h3 id="real"></h3>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+        var total=0;
+        var prints=0;
+        var pre=0;
+        var calc=0;
+        function savetoLocal(event)
+        {
+            event.preventDefault();
+  
+            const sp = event.target.sid.value;
+            const pn = event.target.pid.value;
+
+            const obj={
+                sp,
+                pn
+            }
+            
+            axios.post("https://crudcrud.com/api/0e3d330b271b44b0a19f62e899930f50/product",obj)
+                 .then((response)=>{
+                    showuserDetails(response.data)
+                    for(var i=0;i<response.data.length;i++)
+                      {
+                        showuserDetails(response.data[i])
+                        total=convert+total 
+                      }
+                    display(obj)
+                 })                  
+                 .catch((error)=>console.log(error))
+        }
+        
+        window.addEventListener("DOMContentLoaded",()=>{
+            
+            axios.get("https://crudcrud.com/api/0e3d330b271b44b0a19f62e899930f50/product")
+                 .then((response)=>{
+                      for(var i=0;i<response.data.length;i++)
+                      {
+                        showuserDetails(response.data[i])
+                        total=convert+total 
+                      }
+
+                      document.getElementById('demo').innerHTML=document.getElementById('demo').innerHTML+total
+                 })
+                 .catch((error)=>console.log(error))
+        }) 
+        
+        function showuserDetails(user)
+        {
+             
+              parent=document.getElementById('listofitems');
+              child=`<li id="${user._id}">${user.sp} - ${user.pn}
+                <button onclick = deleteUser('${user._id}','${user.sp}')>Delete product</button>
+                </li>`
+              convert = parseInt(user.sp)
+              parent.innerHTML=parent.innerHTML + child  
+         }
+
+        function deleteUser(userId,sprice)
+        {
+            axios.delete(`https://crudcrud.com/api/0e3d330b271b44b0a19f62e899930f50/product/${userId}`)
+                 .then((response)=>{
+                     removeUserFromScreen(userId,sprice)
+                     document.getElementById('demo').innerHTML = calc
+                 })
+
+                 .catch((error)=>console.log(error))
+        }
+
+        function removeUserFromScreen(userId,sprice)
+        {
+            parent=document.getElementById('listofitems');
+            child=document.getElementById(userId);
+            if(child)
+            {
+                parent.removeChild(child);
+            }
+            
+          calc=total-sprice
+          //console.log(calc)
+          //console.log(sprice)
+          total=calc
+        }
+        
+        function totals(obj)
+        {
+            pre=parseInt(obj.sp)
+            prints=pre+total
+            //console.log(prints)
+            total=total+pre
+
+            return prints
+        }
+    
+        function display(obj)
+        {
+            document.getElementById('high').innerHTML
+            document.getElementById('demo').innerHTML = totals(obj)
+            
+        }
+    
+    
+    </script>
+</body>
+</html>
